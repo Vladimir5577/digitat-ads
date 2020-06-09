@@ -1,0 +1,8 @@
+/uploads/*.jpeg
+/uploads/*.jpg
+/uploads/*.png
+/uploads/ads/*.jpeg
+/uploads/ads/*.jpg
+/uploads/ads/*.png
+!/uploads/
+!/uploads/ads/
