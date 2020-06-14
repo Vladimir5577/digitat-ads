@@ -54,5 +54,6 @@ $route['user/(:any)'] = 'UserController/$1';
 $route['user/(:any)/:num'] = 'UserController/$1/$2';
 $route['auth/(:any)'] = 'AuthController/$1';
 $route['ads/(:any)'] = 'AdsController/$1';
+$route['comment/(:any)'] = 'CommentController/$1';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

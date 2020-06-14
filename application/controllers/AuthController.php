@@ -2,6 +2,11 @@
 
 class AuthController extends CI_Controller {
 	public function login() {
+		// check already login
+		// if($this->session->user_data('login_user_id')) {
+		// 	redirect(base_url());
+		// 	exit;
+		// }
 		$error = $this->session->flashdata('login_failed');
 		$this->load->view("main", ["page_name" => "login", 'error' => $error]);
 	}

@@ -1,3 +1,5 @@
+
+
 <div class="container">
 	<ul class="list-box">
 		<?php if(!$ads) { ?>
@@ -5,6 +7,7 @@
 		<?php } ?>
 		<?php if($ads && is_array($ads) && count($ads) > 0){ ?>
 		<?php foreach($ads as $data) { ?>
+
 		<li class="list-box-item">
 			<div class="list-box-img">
 				<img src="<?php echo base_url().'uploads/ads/'.$data['photo']; ?>" />
@@ -17,6 +20,7 @@
 				</div>
 			</div>
 		</li>
+
 		<?php } ?>
 		<?php } ?>
 	</ul>

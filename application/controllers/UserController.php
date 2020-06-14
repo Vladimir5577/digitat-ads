@@ -45,7 +45,12 @@ class UserController extends CI_Controller {
 		$errors = $this->session->flashdata('errors');
 		$user = $this->userModel->getUserById($this->session->userdata('login_user_id'));
 		$upload_status = $this->session->flashdata('update_status');
-		$this->load->view("main", ["page_name" => "update_profile", "user" => $user, 'errors' => $errors, 'upload_status' => $upload_status]);
+		$this->load->view("main", [
+			"page_name" => "update_profile",
+			"user" => $user,
+			'errors' => $errors,
+			'upload_status' => $upload_status
+		]);
 	}
 
 	public function updateUserProfileAction() {
@@ -58,7 +63,7 @@ class UserController extends CI_Controller {
 		}
 
 		$config['upload_path']          = './uploads/';
-        $config['allowed_types']        = 'jpg|png';
+        $config['allowed_types']        = 'jpg|png|jpeg';
         $config['max_size']             = 2048;
 
         $this->load->library('upload', $config);
@@ -91,17 +96,79 @@ class UserController extends CI_Controller {
     	return;
 	}
 
+
+	public function addRatingAction() {
+		$this->load->library("form_validation");
+		$this->form_validation->set_rules('rating', 'Rating', 'required');
+
+		if ($this->form_validation->run()) {
+			$data = [];
+			$data['user_id'] = $this->input->post("user_id");
+			$data['commented_by'] = $this->input->post("commented_by");
+			$data['rate'] = $this->input->post("rating");
+
+			$this->load->model("rateModel");
+			$result = $this->rateModel->writeRate($data);
+			if($result) {
+				$this->session->set_flashdata('rating_added', true);
+			}else {
+				$this->session->set_flashdata('rating_added', false);
+			}
+			redirect(base_url().'user/userProfile/'.$this->input->post('user_id'));
+			exit;	
+		}
+
+		$errors = $this->form_validation->error_array();
+		$this->session->set_flashdata('errors', $errors);
+
+		redirect(base_url().'user/userProfile/'.$this->input->post('user_id'), $errors);
+		exit;
+
+	}
+
 	public function userProfile() {
 		$id = $this->uri->segment(3);
 		$this->load->model('userModel');
 		$user = $this->userModel->getUserById($id);
+		$this->load->model("commentModel");
+		// $comments = $this->commentModel->getCommentForUserId($id);
+		// echo "<pre>";
+		// print_r($comments);
+		// echo "</pre>";
+		// exit;
 		if(!$user) {
 			show_404();
+			exit;
 		}
+
+
+		$this->load->model("rateModel");
+
+		$rate = $this->rateModel->getUserRatingByUserId($id);
+
+		$this->load->model("commentModel");
+		$comment =  $this->commentModel->getUserComment($id);
+
+		$login_user_id = $this->session->userdata('login_user_id');
+		$is_already_rated = $this->rateModel->isUserAlreadyRated($id, $login_user_id);
 		//if(!$user) {}
-		$this->load->view("main", ['page_name' => 'user_profile', 'user' => $user]);
+		$errors = $this->session->flashdata('errors');
+		$comment_added = $this->session->flashdata("comment_added");
+		$rating_added = $this->session->flashdata('rating_added');
+		$this->load->view("main", [
+						'page_name' => 'user_profile',
+						'user' => $user,
+						'logged_in_user_id' => $login_user_id,
+						'comment_user' => $comment,
+						"errors" => $errors,
+						'rate' => $rate,
+						'is_already_rated' => $is_already_rated,
+						'comment_added' => $comment_added,
+						'rating_added' => $rating_added
+					]);
 	}
 
 }
 
 ?>
+
